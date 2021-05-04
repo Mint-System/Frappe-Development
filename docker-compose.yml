@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  redis-cache:
+    container_name: redis-cache
+    image: redis:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-cache-vol:/data
+
+  redis-queue:
+    container_name: redis-queue
+    image: redis:latest
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - redis-queue-vol:/data
+
+  redis-socketio:
+    container_name: redis-socketio
+    image: redis:latest
+    ports:
+      - "127.0.0.1:6381:6379"
+    volumes:
+      - redis-socketio-vol:/data
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:11.8
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: frappe
+      POSTGRES_USER: frappe
+      POSTGRES_PASSWORD: frappe
+    volumes:
+        - postgresql-vol:/var/lib/postgresql/data
+
+volumes:
+  postgresql-vol:
+  redis-cache-vol:
+  redis-queue-vol:
+  redis-socketio-vol:

@@ -1,0 +1,130 @@
+#!/bin/bash
+
+function help() {
+    echo
+    echo "$1 <command> [options]"
+    echo
+    echo "commands:"
+    echo
+    column -t -s"|" ./task.md | tail -n +3
+    echo
+}
+
+GIT_BRANCH=$(git branch --show-current)
+
+function activate-venv() {
+    source "venv$GIT_BRANCH/bin/activate"
+}
+
+function init-venv() {
+    if [ ! -d "venv$GIT_BRANCH" ]; then
+        python3 -m venv "venv$GIT_BRANCH"
+        source "venv$GIT_BRANCH/bin/activate"
+    fi
+}
+
+function install() {
+
+    # Init Python and install bench
+    init-venv
+    activate-venv
+    pip install frappe-bench
+
+    # Install Frappe with bench
+    bench init --skip-redis-config-generation --frappe-branch version-13 frappe
+
+    # Set configuration
+    cd frappe
+    bench set-mariadb-host localhost
+    bench set-redis-cache-host localhost:6379
+    bench set-redis-queue-host localhost:6380
+    bench set-redis-socketio-host localhost:6381
+
+    # Install site
+    echo "Use 'frappe' for username and for password on prompts:"
+    bench new-site mypgsql.localhost --db-type postgres --db-host localhost
+
+    # Enable developer mode
+    bench --site mypgsql.localhost set-config developer_mode 1
+    bench --site mypgsql.localhost clear-cache
+}
+
+function version() {
+    printf "\ndocker:\n"
+    docker version
+    printf "\ndocker-compose:\n"
+    docker-compose version
+    printf "\nwkhtmltopdf:\n"
+    wkhtmltopdf --version
+    printf "\npython:\n"
+    python --version
+    printf "\npip:\n"
+    pip --version
+    printf "\nnode:\n"
+    node --version
+    printf "\nnpm:\n"
+    npm --version
+    printf "\nyarn:\n"
+    yarn --version
+}
+
+function new-app() {
+    if test -z "$1"; then
+        echo "\$1 is empty"
+        exit
+    fi
+
+    activate-venv
+    cd frappe
+    bench new-app $1
+    bench --site mypgsql.localhost install-app $1
+}
+
+function start() {
+    if test -z "$1"; then
+        cd frappe
+        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
+        bench start
+    fi
+
+    if [ "$1" = "db" ]; then
+        docker-compose up -d
+    fi
+}
+
+function restart() {
+    if test -z "$1"; then
+        docker-compose restart
+    fi
+}
+
+case "$1" in
+version)
+    version
+    ;;
+install)
+    install
+    ;;
+init)
+    init $2
+    ;;
+start)
+    start $2
+    ;;
+new-app)
+    new-app $2
+    ;;
+restart)
+    restart $2
+    ;;
+stop)
+    docker-compose stop
+    ;;
+kill)
+    docker-compose down -v
+    ;;
+*)
+    help task
+    exit 1
+    ;;
+esac
