@@ -4,4 +4,4 @@ __pycache__
 apps
 default.vim
 venv*
-frappe
+frappe-bench

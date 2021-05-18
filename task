@@ -31,10 +31,10 @@ function install() {
     pip install frappe-bench
 
     # Install Frappe with bench
-    bench init --skip-redis-config-generation --frappe-branch version-13 frappe
+    bench init --skip-redis-config-generation --frappe-branch version-13 frappe-bench
 
     # Set configuration
-    cd frappe
+    cd frappe-bench
     bench set-mariadb-host localhost
     bench set-redis-cache-host localhost:6379
     bench set-redis-queue-host localhost:6380
@@ -75,20 +75,37 @@ function new-app() {
     fi
 
     activate-venv
-    cd frappe
+    cd frappe-bench
     bench new-app $1
+    bench --site mypgsql.localhost install-app $1
+}
+
+function get-app() {
+    if test -z "$1"; then echo "\$1 is empty"; exit; fi
+    if test -z "$2"; then echo "\$1 is empty"; exit; fi
+    
+    activate-venv
+    cd frappe-bench
+    bench get-app schools $1 $2
     bench --site mypgsql.localhost install-app $1
 }
 
 function start() {
     if test -z "$1"; then
         activate-venv
-        cd frappe
+        cd frappe-bench
         echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
         bench start
     fi
 
     if [ "$1" = "db" ]; then
+        docker-compose up -d redis-cache
+        docker-compose up -d redis-queue
+        docker-compose up -d redis-socketio
+        docker-compose up -d postgresql
+    fi
+
+    if [ "$1" = "docker" ]; then
         docker-compose up -d
     fi
 }
@@ -114,6 +131,9 @@ start)
     ;;
 new-app)
     new-app $2
+    ;;
+get-app)
+    get-app $2 $3
     ;;
 restart)
     restart $2

@@ -1,3 +1,3 @@
-[submodule "frappe/apps/uppsala"]
-	path = frappe/apps/uppsala
+[submodule "frappe-bench/apps/uppsala"]
+	path = frappe-bench/apps/uppsala
 	url = git@gitlab.com:hfmts/uppsala.git
