@@ -82,6 +82,7 @@ function new-app() {
 
 function start() {
     if test -z "$1"; then
+        activate-venv
         cd frappe
         echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
         bench start
