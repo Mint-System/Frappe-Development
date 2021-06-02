@@ -31,7 +31,9 @@ Check if required tools are installed.
 task version
 ```
 
-Start Docker containers.
+### Native
+
+Start Docker database containers.
 
 ```bash
 task start db
@@ -49,8 +51,28 @@ Init Frappe app.
 task new-app demo
 ```
 
-Start development server.
+Start frappe development server.
 
 ```bash
 task start
+```
+
+### Docker
+
+Start Docker containers.
+
+```bash
+task start docker
+```
+
+Install Frappe Docker dependencies.
+
+```bash
+task install docker
+```
+
+Start Docker frappe development server.
+
+```bash
+task start bench
 ```
