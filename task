@@ -49,6 +49,7 @@ function install() {
 
         # Enable developer mode
         bench --site mypgsql.localhost set-config developer_mode 1
+        bench --site mypgsql.localhost set-config max_file_size 1000000
         bench --site mypgsql.localhost clear-cache
     fi
 
@@ -67,6 +68,7 @@ function install() {
 
         # Enable developer mode
         $docker_exec bench --site mypgsql.localhost set-config developer_mode 1
+        $docker_exec bench --site mypgsql.localhost set-config max_file_size 1000000
         $docker_exec bench --site mypgsql.localhost clear-cache
     fi
 }
@@ -112,6 +114,12 @@ function get-app() {
     bench --site mypgsql.localhost install-app $1
 }
 
+function clear-cache() {
+    activate-venv
+    cd frappe-bench
+    bench --site all clear-cache
+}
+
 function start() {
     if test -z "$1"; then
         activate-venv
@@ -137,6 +145,13 @@ function start() {
     fi
 }
 
+function stop() {
+
+    if [ "$1" = "bench" ]; then
+        docker exec -w /workspace/frappe-bench frappe killall -s 9 python
+    fi
+}
+
 function restart() {
     if test -z "$1"; then
         docker-compose restart
@@ -156,6 +171,9 @@ init)
 start)
     start $2
     ;;
+stop)
+    stop $2
+    ;;
 new-app)
     new-app $2
     ;;
@@ -165,11 +183,11 @@ get-app)
 restart)
     restart $2
     ;;
-stop)
-    docker-compose stop
-    ;;
 kill)
     docker-compose down -v
+    ;;
+clear-cache)
+    clear-cache
     ;;
 *)
     help task
