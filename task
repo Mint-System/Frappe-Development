@@ -83,6 +83,12 @@ function bench() {
     bench $1 mypgsql.localhost
 }
 
+function docker-bench() {
+    if test -z "$1"; then echo "\$1 is empty"; exit; fi
+
+    docker exec -w /workspace frappe bench $1
+}
+
 function version() {
     printf "\ndocker:\n"
     docker version
