@@ -73,16 +73,16 @@ function docker-install() {
 }
 
 function bench() {
-    # Init Python and install bench
     init-venv
     activate-venv
+    cd frappe-bench
 
     bench --site mypgsql.localhost "$@"
 }
 
 function docker-bench() {
 
-    docker exec -w /workspace frappe bench --site mypgsql.localhost "$@"
+    docker exec -w /workspace/frappe-bench frappe bench --site mypgsql.localhost "$@"
 }
 
 function version() {
