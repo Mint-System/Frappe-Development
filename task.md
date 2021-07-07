@@ -1,11 +1,15 @@
-| command     | option       | description                                                                              |
-| ----------- | ------------ | ---------------------------------------------------------------------------------------- |
-| version     |              | Show tooling version                                                                     |
-| install     | [type]       | Init Python env, install Frappe and init default site. Use type docker for Docker setup. |
-| new-app     | [name]       | Create new Frappe app                                                                    |
-| get-app     | [name] [url] | Install app from git url                                                                 |
-| start       | [option]     | Start Docker containers or by default run bench. Options: db,bench or docker.            |
-| restart     |              | Restart Docker containers                                                                |
-| stop        | [option]     | Stop Docker containers or bench. Options: docker, bench.                                 |
-| kill        |              | Remove Docker containers                                                                 |
-| clear-cache |              | Clear cache for all sites.                                                               |
+| command        | option       | description                                                                        |
+| -------------- | ------------ | ---------------------------------------------------------------------------------- |
+| version        |              | Show tooling version                                                               |
+| install        | [type]       | Init Python env, install Frappe and init default site.                             |
+| docker-install | [type]       | Init Python env, install Frappe and init default site using docker.                |
+| bench          | [command]    | Run bench command on default site. Options: drop-site, new-site                    |
+| new-app        | [name]       | Create new Frappe app                                                              |
+| install-app    | [name]       | Install app on default site.                                                       |
+| uninstall-app  | [name]       | Uninstall app on default site.                                                     |
+| get-app        | [name] [url] | Install app from git url                                                           |
+| start          | [option]     | Start Docker containers or by default run native bench. Options: db,all or docker. |
+| restart        |              | Restart Docker containers                                                          |
+| stop           | [option]     | Stop Docker containers or bench. Options: docker, bench.                           |
+| kill           |              | Remove Docker containers                                                           |
+| clear-cache    |              | Clear cache for all sites.                                                         |

@@ -62,17 +62,17 @@ task start
 Start Docker containers.
 
 ```bash
-task start docker
+task start all
 ```
 
 Install Frappe Docker dependencies.
 
 ```bash
-task install docker
+task docker-install
 ```
 
 Start Docker frappe development server.
 
 ```bash
-task start bench
+task start docker
 ```
