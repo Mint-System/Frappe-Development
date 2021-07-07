@@ -174,11 +174,11 @@ function start() {
 function stop() {
     if test -z "$1"; then echo "\$1 is empty"; exit; fi
 
-    if [ "$1" = "bench" ]; then
+    if [ "$1" = "docker" ]; then
         docker exec -w /workspace/frappe-bench frappe killall -s 9 python
     fi
 
-    if [ "$1" = "docker" ]; then
+    if [ "$1" = "all" ]; then
         docker-compose stop
     fi
 }
