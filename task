@@ -73,19 +73,16 @@ function docker-install() {
 }
 
 function bench() {
-    if test -z "$@"; then echo "\$1 is empty"; exit; fi
-
     # Init Python and install bench
     init-venv
     activate-venv
 
-    bench $@
+    bench --site mypgsql.localhost "$@"
 }
 
 function docker-bench() {
-    if test -z "$@"; then echo "\$1 is empty"; exit; fi
 
-    docker exec -w /workspace frappe bench $@
+    docker exec -w /workspace frappe bench --site mypgsql.localhost "$@"
 }
 
 function version() {
