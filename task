@@ -10,8 +10,11 @@ function help() {
     echo
 }
 
+# Set default env vars
 DEFAULT_SITE=pgsql.localhost
 GIT_BRANCH=$(git branch --show-current)
+export $(cat .env | sed 's/#.*//g' | xargs)
+
 
 function activate-venv() {
     source "venv$GIT_BRANCH/bin/activate"
