@@ -54,7 +54,7 @@ task new-app demo
 Start frappe development server.
 
 ```bash
-task start
+task start native
 ```
 
 ### Docker

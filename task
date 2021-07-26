@@ -10,6 +10,7 @@ function help() {
     echo
 }
 
+DEFAULT_SITE=pgsql.localhost
 GIT_BRANCH=$(git branch --show-current)
 
 function activate-venv() {
@@ -44,12 +45,12 @@ function install() {
 
     # Install site
     echo "Use 'frappe' for username and for password on prompts:"
-    bench new-site mypgsql.localhost --db-type postgres --db-host localhost
+    bench new-site $DEFAULT_SITE --db-type postgres --db-host localhost --db-password frappe --admin-password frappe
 
     # Enable developer mode
-    bench --site mypgsql.localhost set-config developer_mode 1
-    bench --site mypgsql.localhost set-config max_file_size 1000000
-    bench --site mypgsql.localhost clear-cache
+    bench --site $DEFAULT_SITE set-config developer_mode 1
+    bench --site $DEFAULT_SITE set-config max_file_size 1000000
+    bench --site $DEFAULT_SITE clear-cache
 }
 
 function docker-install() {
@@ -64,25 +65,25 @@ function docker-install() {
 
     # Install site
     echo "Use 'frappe' for username and for password on prompts:"
-    docker exec -w /workspace/frappe-bench -it frappe bench new-site mypgsql.localhost --db-type postgres --db-host postgresql
+    docker exec -w /workspace/frappe-bench -it frappe bench new-site $DEFAULT_SITE --db-type postgres --db-host postgresql
 
     # Enable developer mode
-    $docker_exec bench --site mypgsql.localhost set-config developer_mode 1
-    $docker_exec bench --site mypgsql.localhost set-config max_file_size 1000000
-    $docker_exec bench --site mypgsql.localhost clear-cache
+    $docker_exec bench --site $DEFAULT_SITE set-config developer_mode 1
+    $docker_exec bench --site $DEFAULT_SITE set-config max_file_size 1000000
+    $docker_exec bench --site $DEFAULT_SITE clear-cache
 }
 
-function bench() {
+function native-bench() {
     init-venv
     activate-venv
     cd frappe-bench
 
-    bench --site mypgsql.localhost "$@"
+    bench --site $DEFAULT_SITE "$@"
 }
 
 function docker-bench() {
 
-    docker exec -w /workspace/frappe-bench frappe bench --site mypgsql.localhost "$@"
+    docker exec -w /workspace/frappe-bench frappe bench --site $DEFAULT_SITE "$@"
 }
 
 function version() {
@@ -110,7 +111,7 @@ function new-app() {
     activate-venv
     cd frappe-bench
     bench new-app $1
-    bench --site mypgsql.localhost install-app $1
+    bench --site $DEFAULT_SITE install-app $1
 }
 
 function get-app() {
@@ -120,7 +121,7 @@ function get-app() {
     activate-venv
     cd frappe-bench
     bench get-app schools $1 $2
-    bench --site mypgsql.localhost install-app $1
+    bench --site $DEFAULT_SITE install-app $1
 }
 
 function install-app() {
@@ -128,7 +129,7 @@ function install-app() {
     
     activate-venv
     cd frappe-bench
-    bench --site mypgsql.localhost install-app $1
+    bench --site $DEFAULT_SITE install-app $1
 }
 
 
@@ -137,7 +138,7 @@ function uninstall-app() {
     
     activate-venv
     cd frappe-bench
-    bench --site mypgsql.localhost uninstall-app $1
+    bench --site $DEFAULT_SITE uninstall-app $1
 }
 
 function clear-cache() {
@@ -147,7 +148,7 @@ function clear-cache() {
 }
 
 function start() {
-    if test -z "$1"; then
+    if [ "$1" = "native" ]; then
         activate-venv
         cd frappe-bench
         echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
@@ -199,8 +200,8 @@ install)
 docker-install)
     docker-install $2
     ;;
-bench)
-    bench "${@:2}"
+native-bench)
+    native-bench "${@:2}"
     ;;
 docker-bench)
     docker-bench "${@:2}"
