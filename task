@@ -58,6 +58,12 @@ function install() {
     bench --site $DEFAULT_SITE clear-cache
 }
 
+function upgrade() {
+    echo "Upgrade frappe bench"
+    activate-venv
+    pip install --upgrade frappe-bench 
+}
+
 function docker-install() {
 
     echo "Run docker installation"
@@ -65,14 +71,15 @@ function docker-install() {
     docker_exec="docker exec -w /workspace/frappe-bench frappe"
     $docker_exec bench set-mariadb-host postgresql
     $docker_exec bench set-redis-cache-host redis-cache:6379
-    $docker_exec bench set-redis-cache-host edis-queue:6379
+    $docker_exec bench set-redis-cache-host redis-queue:6379
     $docker_exec bench set-redis-cache-host redis-socketio:6379
 
     # Install site
     echo "Use 'frappe' for username and for password on prompts:"
-    docker exec -w /workspace/frappe-bench -it frappe bench new-site $DEFAULT_SITE --db-type postgres --db-host postgresql
+    docker exec -w /workspace/frappe-bench -it frappe bench new-site $DEFAULT_SITE --db-type postgres --db-host postgresql --db-password frappe --admin-password frappe
 
     # Enable developer mode
+    echo "Apply default settings"
     $docker_exec bench --site $DEFAULT_SITE set-config developer_mode 1
     $docker_exec bench --site $DEFAULT_SITE set-config max_file_size 1000000
     $docker_exec bench --site $DEFAULT_SITE clear-cache
@@ -219,6 +226,9 @@ start)
     ;;
 stop)
     stop $2
+    ;;
+upgrade)
+    upgrade
     ;;
 new-app)
     new-app $2

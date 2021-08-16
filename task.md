@@ -14,3 +14,4 @@
 | stop           | [option]     | Stop Docker containers or docker bench. Options: docker, all.                          |
 | kill           |              | Remove Docker containers                                                               |
 | clear-cache    |              | Clear cache for all sites.                                                             |
+| upgrade        |              | Upgrade Frappe bench.                                                                  |
