@@ -2,7 +2,6 @@
 | -------------- | ------------ | -------------------------------------------------------------------------------------- |
 | version        |              | Show tooling version                                                                   |
 | install        | [type]       | Init Python env, install Frappe and init default site.                                 |
-| docker-install | [type]       | Init Python env, install Frappe and init default site using docker.                    |
 | native-bench   | [command]    | Run bench command on default site. Options: drop-site, new-site, backup, ...           |
 | docker-bench   | [command]    | Run bench command on default site in docker. Options: drop-site, new-site, backup, ... |
 | new-app        | [name]       | Create new Frappe app                                                                  |

@@ -11,8 +11,17 @@ function help() {
 }
 
 # Set default env vars
-DEFAULT_SITE=pgsql.localhost
-GIT_BRANCH=$(git branch --show-current)
+export GIT_BRANCH=$(git branch --show-current)
+export FRAPPE_VERSION=v13
+export LETSENCRYPT_EMAIL=email@example.com
+export POSTGRES_HOST=postgresql
+export POSTGRES_PASSWORD=frappe
+export SITE_NAME=mysite.localhost
+export SITES=mysite.localhost
+export DB_ROOT_USER=postgres
+export ADMIN_PASSWORD=frappe
+export INSTALL_APPS=uppsala
+
 if [ -a ".env" ]; then
     export $(cat .env | sed 's/#.*//g' | xargs)
 fi
@@ -49,12 +58,12 @@ function install() {
 
     # Install site
     echo "Use 'frappe' for username and for password on prompts:"
-    bench new-site $DEFAULT_SITE --db-type postgres --db-host localhost --db-password frappe --admin-password frappe
+    bench new-site $SITE_NAME --db-type postgres --db-host localhost --db-password frappe --admin-password frappe
 
     # Enable developer mode
-    bench --site $DEFAULT_SITE set-config developer_mode 1
-    bench --site $DEFAULT_SITE set-config max_file_size 1000000
-    bench --site $DEFAULT_SITE clear-cache
+    bench --site $SITE_NAME set-config developer_mode 1
+    bench --site $SITE_NAME set-config max_file_size 1000000
+    bench --site $SITE_NAME clear-cache
 }
 
 function upgrade() {
@@ -63,38 +72,15 @@ function upgrade() {
     pip install --upgrade frappe-bench 
 }
 
-function docker-install() {
-
-    echo "Run docker installation"
-    docker exec -w /workspace frappe bench init --skip-redis-config-generation --frappe-branch version-13 frappe-bench
-    docker_exec="docker exec -w /workspace/frappe-bench frappe"
-    $docker_exec bench set-mariadb-host postgresql
-    $docker_exec bench set-redis-cache-host redis-cache:6379
-    $docker_exec bench set-redis-cache-host redis-queue:6379
-    $docker_exec bench set-redis-cache-host redis-socketio:6379
-
-    # Install site
-    echo "Use 'frappe' for username and for password on prompts:"
-    docker exec -w /workspace/frappe-bench -it frappe bench new-site $DEFAULT_SITE --db-type postgres --db-host postgresql --db-password frappe --admin-password frappe
-
-    # Enable developer mode
-    echo "Apply default settings"
-    $docker_exec bench --site $DEFAULT_SITE set-config developer_mode 1
-    $docker_exec bench --site $DEFAULT_SITE set-config max_file_size 1000000
-    $docker_exec bench --site $DEFAULT_SITE clear-cache
-}
-
 function native-bench() {
     init-venv
     activate-venv
     cd frappe-bench
-
-    bench --site $DEFAULT_SITE "$@"
+    bench --site $SITE_NAME "$@"
 }
 
 function docker-bench() {
-
-    docker exec -w /workspace/frappe-bench frappe bench --site $DEFAULT_SITE "$@"
+    docker exec frappe-python bench --site $SITE_NAME "$@"
 }
 
 function version() {
@@ -122,7 +108,7 @@ function new-app() {
     activate-venv
     cd frappe-bench
     bench new-app $1
-    bench --site $DEFAULT_SITE install-app $1
+    bench --site $SITE_NAME install-app $1
 }
 
 function get-app() {
@@ -132,7 +118,7 @@ function get-app() {
     activate-venv
     cd frappe-bench
     bench get-app schools $1 $2
-    bench --site $DEFAULT_SITE install-app $1
+    bench --site $SITE_NAME install-app $1
 }
 
 function install-app() {
@@ -140,16 +126,15 @@ function install-app() {
     
     activate-venv
     cd frappe-bench
-    bench --site $DEFAULT_SITE install-app $1
+    bench --site $SITE_NAME install-app $1
 }
-
 
 function uninstall-app() {
     if test -z "$1"; then echo "\$1 is empty"; exit; fi
     
     activate-venv
     cd frappe-bench
-    bench --site $DEFAULT_SITE uninstall-app $1
+    bench --site $SITE_NAME uninstall-app $1
 }
 
 function clear-cache() {
@@ -162,7 +147,7 @@ function start() {
     if [ "$1" = "native" ]; then
         activate-venv
         cd frappe-bench
-        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
+        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
         bench start
     fi
 
@@ -175,10 +160,11 @@ function start() {
 
     if [ "$1" = "all" ]; then
         docker-compose up -d
+        echo "Open http://$SITE_NAME:8080/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
     fi
 
     if [ "$1" = "docker" ]; then
-        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:frappe'."
+        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
         docker exec -w /workspace/frappe-bench frappe bench start
     fi
 }

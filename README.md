@@ -45,17 +45,14 @@ Install Frappe dependencies.
 task install
 ```
 
-Init Frappe app.
-
-```bash
-task new-app demo
-```
-
 Start frappe development server.
 
 ```bash
 task start native
 ```
+
+Install app.
+
 
 ### Docker
 
@@ -65,14 +62,10 @@ Start Docker containers.
 task start all
 ```
 
-Install Frappe Docker dependencies.
+Install app.
 
 ```bash
-task docker-install
-```
-
-Start Docker frappe development server.
-
-```bash
-task start docker
+docker exec frappe-python install_app uppsala https://gitlab.com/hfmts/uppsala.git
+docker exec frappe-python bash -c 'echo -e "\nuppsala" >> apps.txt'
+task docker-bench install-app uppsala
 ```
