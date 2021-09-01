@@ -18,7 +18,7 @@ export POSTGRES_HOST=postgresql
 export POSTGRES_PASSWORD=frappe
 export SITE_NAME=mysite.localhost
 export SITES=mysite.localhost
-export DB_ROOT_USER=postgres
+export DB_ROOT_USER=frappe
 export ADMIN_PASSWORD=frappe
 export INSTALL_APPS=uppsala
 
@@ -123,10 +123,27 @@ function get-app() {
 
 function install-app() {
     if test -z "$1"; then echo "\$1 is empty"; exit; fi
+    if test -z "$2"; then echo "\$1 is empty"; exit; fi
     
     activate-venv
     cd frappe-bench
+    if test -z "$1"; then echo "\$1 is empty"; exit; fi
+    if test -z "$2"; then echo "\$1 is empty"; exit; fi
+    
+    activate-venv
+    cd frappe-bench
+    bench get-app $1 $2
     bench --site $SITE_NAME install-app $1
+}
+
+function docker-install-app() {
+    if test -z "$1"; then echo "\$1 is empty"; exit; fi
+    if test -z "$2"; then echo "\$1 is empty"; exit; fi
+    
+    docker exec frappe-python install_app $1 $2
+    docker exec frappe-python bash -c "echo -e \"\\n$1\" >> apps.txt"
+    docker-bench install-app $1
+    restart
 }
 
 function uninstall-app() {
@@ -144,39 +161,42 @@ function clear-cache() {
 }
 
 function start() {
-    if [ "$1" = "native" ]; then
+    if [[ "$1" =~ "native" ]]; then
         activate-venv
         cd frappe-bench
         echo "Open http://localhost:8000/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
         bench start
     fi
 
-    if [ "$1" = "db" ]; then
+    if [[ "$1" =~ "db" ]]; then
         docker-compose up -d redis-cache
         docker-compose up -d redis-queue
         docker-compose up -d redis-socketio
         docker-compose up -d postgresql
     fi
 
-    if [ "$1" = "all" ]; then
-        docker-compose up -d
-        echo "Open http://$SITE_NAME:8080/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
+    if [[ "$1" =~ "site" ]]; then
+        docker-compose up -d site-creator
     fi
 
-    if [ "$1" = "docker" ]; then
-        echo "Open http://localhost:8000/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
-        docker exec -w /workspace/frappe-bench frappe bench start
+    if [[ "$1" =~ "worker" ]]; then
+        docker-compose up -d frappe-worker-long
+        docker-compose up -d frappe-worker-short
+        docker-compose up -d frappe-worker-default
+    fi
+
+    if [[ "$1" =~ "nginx" ]]; then
+        docker-compose up -d frappe-nginx
+    fi
+
+    if [[ "$1" =~ "all" ]]; then
+        docker-compose up -d
+        echo "Open http://$SITE_NAME:8080/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
     fi
 }
 
 function stop() {
-    if test -z "$1"; then echo "\$1 is empty"; exit; fi
-
-    if [ "$1" = "docker" ]; then
-        docker exec -w /workspace/frappe-bench frappe killall -s 9 python
-    fi
-
-    if [ "$1" = "all" ]; then
+    if test -z "$1"; then
         docker-compose stop
     fi
 }
@@ -210,7 +230,10 @@ start)
     start $2
     ;;
 stop)
-    stop $2
+    stop
+    ;;
+logs)
+    docker logs frappe-python -f
     ;;
 upgrade)
     upgrade
@@ -218,17 +241,17 @@ upgrade)
 new-app)
     new-app $2
     ;;
-get-app)
-    get-app $2 $3
-    ;;
 install-app)
-    install-app $2
+    install-app $2 $3
     ;;
 uninstall-app)
     uninstall-app $2
     ;;
+docker-install-app)
+    docker-install-app $2 $3
+    ;;
 restart)
-    restart $2
+    restart
     ;;
 kill)
     docker-compose down -v

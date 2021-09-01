@@ -7,12 +7,20 @@ This projects provides a highly opinionated way to develop Frappe sites and apps
 
 ## Requirements
 
+Common:
+
+* bash/zsh alias `task='./task'` with optional [completion](https://github.com/janikvonrotz/dotfiles/blob/master/oh-my-zsh-completions/_task)
+
+Docker:
+
 * [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/)
+
+Native:
+
 * Install Python 3.6+ with [pyenv](https://github.com/pyenv/pyenv)
 * Install Node.js 12+ with [n](https://github.com/tj/n)
 * Install yarn 1.12+: `npm install -g yarn`
 * [wkhtmltopdf](https://wkhtmltopdf.org/): `sudo apt install wkhtmltopdf`
-* bash/zsh alias: `task='./task'`
 
 ## Usage
 
@@ -45,14 +53,17 @@ Install Frappe dependencies.
 task install
 ```
 
+Install app.
+
+```bash
+task install-app uppsala https://gitlab.com/hfmts/uppsala.git
+```
+
 Start frappe development server.
 
 ```bash
 task start native
 ```
-
-Install app.
-
 
 ### Docker
 
@@ -65,7 +76,5 @@ task start all
 Install app.
 
 ```bash
-docker exec frappe-python install_app uppsala https://gitlab.com/hfmts/uppsala.git
-docker exec frappe-python bash -c 'echo -e "\nuppsala" >> apps.txt'
-task docker-bench install-app uppsala
+task docker-install-app uppsala https://gitlab.com/hfmts/uppsala.git
 ```

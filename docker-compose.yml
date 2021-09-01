@@ -1,10 +1,11 @@
 version: '3'
-
+# https://github.com/frappe/frappe_docker/blob/develop/installation/frappe-postgresql/docker-compose.yml
 services:
 
   frappe-nginx:
     container_name: frappe-nginx
     image: frappe/frappe-nginx:${FRAPPE_VERSION}
+    restart: on-failure
     environment:
       FRAPPE_PY: frappe-python
       FRAPPE_PY_PORT: 8000
@@ -23,6 +24,7 @@ services:
   frappe-python:
     container_name: frappe-python
     image: frappe/frappe-worker:${FRAPPE_VERSION}
+    restart: on-failure
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       DB_PORT: 5432
@@ -38,9 +40,8 @@ services:
   frappe-socketio:
     container_name: frappe-socketio
     image: frappe/frappe-socketio:${FRAPPE_VERSION}
+    restart: on-failure
     depends_on:
-      - redis-socketio
-    links:
       - redis-socketio
     volumes:
       - sites-vol:/home/frappe/frappe-bench/sites:rw
@@ -49,6 +50,7 @@ services:
   frappe-worker-default:
     container_name: frappe-worker-default
     image: frappe/frappe-worker:${FRAPPE_VERSION}
+    restart: on-failure
     command: worker
     depends_on:
       - redis-queue
@@ -60,6 +62,7 @@ services:
   frappe-worker-short:
     container_name: frappe-worker-short
     image: frappe/frappe-worker:${FRAPPE_VERSION}
+    restart: on-failure
     command: worker
     environment:
       WORKER_TYPE: short
@@ -73,6 +76,7 @@ services:
   frappe-worker-long:
     container_name: frappe-worker-long
     image: frappe/frappe-worker:${FRAPPE_VERSION}
+    restart: on-failure
     command: worker
     environment:
       WORKER_TYPE: long
@@ -86,6 +90,7 @@ services:
   frappe-schedule:
     container_name: frappe-schedule
     image: frappe/frappe-worker:${FRAPPE_VERSION}
+    restart: on-failure
     command: schedule
     depends_on:
       - redis-queue
@@ -97,6 +102,7 @@ services:
   redis-cache:
     container_name: redis-cache
     image: redis:latest
+    restart: on-failure
     ports:
       - "127.0.0.1:6379:6379"
     volumes:
@@ -105,6 +111,7 @@ services:
   redis-queue:
     container_name: redis-queue
     image: redis:latest
+    restart: on-failure
     ports:
       - "127.0.0.1:6380:6379"
     volumes:
@@ -113,6 +120,7 @@ services:
   redis-socketio:
     container_name: redis-socketio
     image: redis:latest
+    restart: on-failure
     ports:
       - "127.0.0.1:6381:6379"
     volumes:
@@ -121,9 +129,11 @@ services:
   postgresql:
     container_name: postgresql
     image: postgres:11.8
+    restart: on-failure
     ports:
       - "127.0.0.1:5432:5432"
     environment:
+      POSTGRES_USER: ${DB_ROOT_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgresql-vol:/var/lib/postgresql/data
