@@ -259,6 +259,9 @@ kill)
 clear-cache)
     clear-cache
     ;;
+source)
+    activate-venv
+    ;;
 *)
     help task
     exit 1

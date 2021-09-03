@@ -17,7 +17,7 @@ Docker:
 
 Native:
 
-* Install Python 3.6+ with [pyenv](https://github.com/pyenv/pyenv)
+* Install Python 3.6+ with [pyenv](https://github.com/pyenv/pyenv-installer)
 * Install Node.js 12+ with [n](https://github.com/tj/n)
 * Install yarn 1.12+: `npm install -g yarn`
 * [wkhtmltopdf](https://wkhtmltopdf.org/): `sudo apt install wkhtmltopdf`

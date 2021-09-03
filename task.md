@@ -1,6 +1,6 @@
 | command            | option       | description                                                                            |
 | ------------------ | ------------ | -------------------------------------------------------------------------------------- |
-| version            |              | Show tooling version                                                                   |
+| version            |              | Show tool versions                                                                     |
 | install            | [type]       | Init Python env, install Frappe and init default site.                                 |
 | native-bench       | [command]    | Run bench command on default site. Options: drop-site, new-site, backup, ...           |
 | docker-bench       | [command]    | Run bench command on default site in docker. Options: drop-site, new-site, backup, ... |
@@ -15,3 +15,4 @@
 | logs               |              | Show log for frappe-python Docker container                                            |
 | clear-cache        |              | Clear cache for all sites.                                                             |
 | upgrade            |              | Upgrade Frappe bench.                                                                  |
+| source             |              | Source the Python virtual env.                                                         |
