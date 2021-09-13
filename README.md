@@ -100,5 +100,5 @@ task docker-install-dev
 Start the Docker development server.
 
 ```bash
-task start dev
+task start bench
 ```

@@ -209,7 +209,11 @@ function start() {
 
     if [[ "$1" =~ "dev" ]]; then
         docker-compose -f docker-compose-dev.yml up -d
-        echo "Run 'task start-dev' manually and open http://$SITE_NAME:8000/ in your browser."
+        echo "Run 'task start bench' manually and open http://$SITE_NAME:8000/ in your browser."
+        docker exec -w /workspace/frappe-bench frappe-bench bench start
+    fi
+
+    if [[ "$1" =~ "bench" ]]; then
         docker exec -w /workspace/frappe-bench frappe-bench bench start
     fi
 
