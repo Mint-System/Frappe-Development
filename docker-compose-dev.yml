@@ -11,7 +11,7 @@ services:
     working_dir: /workspace
     ports:
       - "8000:8000"
-      - "9000:9000"
+      - "8443:8443"
 
   redis-cache:
     container_name: redis-cache

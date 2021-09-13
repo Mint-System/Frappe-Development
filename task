@@ -47,21 +47,23 @@ function install() {
     activate-venv
     pip install frappe-bench
 
-    # Install Frappe with bench
-    bench init --skip-redis-config-generation --frappe-branch version-13 frappe-bench
+    echo "Install frappe with bench."
+    [ ! -d 'frappe-bench' ] && bench init --skip-redis-config-generation --frappe-branch version-13 frappe-bench
 
-    # Set configuration
+    echo "Configure frappe bench."
     cd frappe-bench
     bench set-mariadb-host localhost
     bench set-redis-cache-host localhost:6379
     bench set-redis-queue-host localhost:6380
     bench set-redis-socketio-host localhost:6381
-
+    bench set-config -g socketio_port 8443
+    
     # Install site
-    echo "Use 'frappe' for username and for password on prompts:"
-    bench new-site $SITE_NAME --db-type postgres --db-host localhost --db-password frappe --admin-password frappe
+    echo "Use $POSTGRES_USER and $POSTGRES_PASSWORD for username and password on prompts:"
+    [ ! -d "frappe-bench/sites/$SITE_NAME" ] && bench new-site $SITE_NAME --db-type postgres --db-host localhost --db-password frappe --admin-password $ADMIN_PASSWORD
 
     # Enable developer mode
+    echo "Apply default settings."
     bench --site $SITE_NAME set-config developer_mode 1
     bench --site $SITE_NAME set-config max_file_size 1000000
 }
@@ -77,6 +79,7 @@ function install-docker-dev() {
     docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_cache redis://redis-cache:6379
     docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_queue redis://redis-queue:6379
     docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_socketio redis://redis-socketio:6379
+    docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g socketio_port 8443
 
     # Install site
     echo "Use $POSTGRES_USER and $POSTGRES_PASSWORD for username and password on prompts:"
@@ -84,7 +87,6 @@ function install-docker-dev() {
 
     # Enable developer mode
     echo "Apply default settings."
-    # docker exec $CONTAINER bench use frappe.mintsys.ch
     docker exec -w /workspace/frappe-bench $CONTAINER bench --site $SITE_NAME set-config developer_mode 1
     docker exec -w /workspace/frappe-bench $CONTAINER bench --site $SITE_NAME set-config max_file_size 1000000
 
@@ -208,6 +210,7 @@ function start() {
     if [[ "$1" =~ "dev" ]]; then
         docker-compose -f docker-compose-dev.yml up -d
         echo "Run 'task start-dev' manually and open http://$SITE_NAME:8000/ in your browser."
+        docker exec -w /workspace/frappe-bench frappe-bench bench start
     fi
 
     if [[ "$1" =~ "all" ]]; then
@@ -252,9 +255,6 @@ init)
     ;;
 start)
     start $2
-    ;;
-start-dev)
-    docker exec -w /workspace/frappe-bench frappe-bench bench start
     ;;
 stop)
     stop

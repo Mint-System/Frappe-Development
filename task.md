@@ -13,7 +13,6 @@
 | restart            |              | Restart Docker containers                                                               |
 | stop               |              | Stop Docker containers.                                                                 |
 | stop-dev           |              | Stop Docker development server.                                                         |
-| start-dev          |              | Start Docker development server.                                                        |
 | kill               |              | Remove Docker containers                                                                |
 | kill-dev           |              | Remove Docker development containers                                                    |
 | logs               |              | Show log for frappe-python Docker container                                             |
