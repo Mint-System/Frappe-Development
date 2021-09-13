@@ -264,7 +264,7 @@ start)
 stop)
     stop
     ;;
-stop-dev)
+stop-bench)
     docker exec -w /workspace/frappe-bench frappe-bench killall -s 9 python
     ;;
 logs)

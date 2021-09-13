@@ -12,7 +12,7 @@
 | start              | [option]     | Start Docker containers or bench. Options: dev, bench, native, db, site, worker, nginx or all. |
 | restart            |              | Restart Docker containers.                                                                     |
 | stop               |              | Stop Docker containers.                                                                        |
-| stop-dev           |              | Stop Docker development server.                                                                |
+| stop-bench         |              | Stop Docker development server.                                                                |
 | kill               |              | Remove Docker containers.                                                                      |
 | kill-dev           |              | Remove Docker development containers.                                                          |
 | logs               |              | Show log for frappe-python Docker container.                                                   |
