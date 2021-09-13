@@ -27,6 +27,7 @@ if [ -a ".env" ]; then
 fi
 
 function activate-venv() {
+    echo "Source virtualenv venv$GIT_BRANCH."
     source "venv$GIT_BRANCH/bin/activate"
 }
 
