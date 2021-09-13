@@ -101,15 +101,19 @@ function upgrade() {
     pip install --upgrade frappe-bench 
 }
 
-function native-bench() {
+function bench-native() {
     init-venv
     activate-venv
     cd frappe-bench
     bench --site $SITE_NAME "$@"
 }
 
-function docker-bench() {
+function bench-docker() {
     docker exec frappe-python bench --site $SITE_NAME "$@"
+}
+
+function bench-docker-dev() {
+    docker exec frappe-bench bench --site $SITE_NAME "$@"
 }
 
 function version() {
@@ -244,11 +248,14 @@ case "$1" in
     install-docker-dev)
         install-docker-dev
         ;;
-    native-bench)
-        native-bench "${@:2}"
+    bench-native)
+        bench-native "${@:2}"
         ;;
-    docker-bench)
-        docker-bench "${@:2}"
+    bench-docker)
+        bench-docker "${@:2}"
+        ;;
+    bench-docker-dev)
+        bench-docker-dev "${@:2}"
         ;;
     init)
         init $2
