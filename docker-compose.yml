@@ -35,6 +35,7 @@ services:
       AUTO_MIGRATE: 1
     volumes:
       - sites-vol:/home/frappe/frappe-bench/sites:rw
+      - assets-vol:/home/frappe/frappe-bench/sites/assets:rw
       - logs-vol:/home/frappe/frappe-bench/logs:rw
 
   frappe-socketio:
