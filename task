@@ -78,7 +78,7 @@ function install-docker-dev() {
     docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_socketio redis://redis-socketio:6379
 
     # Install site
-    echo "Use $POSTGRES_USER and $POSTGRES_PASSWORD for username and for password on prompts:"
+    echo "Use $POSTGRES_USER and $POSTGRES_PASSWORD for username and password on prompts:"
     [ ! -d "frappe-bench/sites/$SITE_NAME" ] && docker exec -w /workspace/frappe-bench -it $CONTAINER bench new-site $SITE_NAME --db-type postgres --db-host postgresql --db-password $POSTGRES_PASSWORD --admin-password $ADMIN_PASSWORD
 
     # Enable developer mode
@@ -206,7 +206,7 @@ function start() {
 
     if [[ "$1" =~ "dev" ]]; then
         docker-compose -f docker-compose-dev.yml up -d
-        echo "Run `task start-dev` manually and open http://$SITE_NAME:8000/ in your browser."
+        echo "Run 'task start-dev' manually and open http://$SITE_NAME:8000/ in your browser."
     fi
 
     if [[ "$1" =~ "all" ]]; then
