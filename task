@@ -105,15 +105,15 @@ function bench-native() {
     init-venv
     activate-venv
     cd frappe-bench
-    bench --site $SITE_NAME "$@"
+    bench "$@"
 }
 
 function bench-docker() {
-    docker exec frappe-python bench --site $SITE_NAME "$@"
+    docker exec frappe-python bench "$@"
 }
 
 function bench-docker-dev() {
-    docker exec frappe-bench bench --site $SITE_NAME "$@"
+    docker exec frappe-bench bench "$@"
 }
 
 function version() {
