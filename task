@@ -18,7 +18,7 @@ export POSTGRES_HOST=postgresql
 export POSTGRES_PASSWORD=frappe
 export SITE_NAME=mysite.localhost
 export SITES=mysite.localhost
-export DB_ROOT_USER=frappe
+export POSTGRES_USER=postgres
 export ADMIN_PASSWORD=frappe
 export INSTALL_APPS=uppsala
 
@@ -63,11 +63,36 @@ function install() {
     # Enable developer mode
     bench --site $SITE_NAME set-config developer_mode 1
     bench --site $SITE_NAME set-config max_file_size 1000000
-    bench --site $SITE_NAME clear-cache
 }
 
+function install-docker-dev() {
+    CONTAINER=frappe-bench
+
+    echo "Run docker installation."
+    [ ! -d 'frappe-bench' ] && docker exec -w /workspace $CONTAINER bench init --skip-redis-config-generation --frappe-branch version-13 frappe-bench
+    
+    echo "Congiure frappe bench."
+    docker exec -w /workspace/frappe-bench $CONTAINER bench set-mariadb-host postgresql
+    docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_cache redis://redis-cache:6379
+    docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_queue redis://redis-queue:6379
+    docker exec -w /workspace/frappe-bench $CONTAINER bench set-config -g redis_socketio redis://redis-socketio:6379
+
+    # Install site
+    echo "Use $POSTGRES_USER and $POSTGRES_PASSWORD for username and for password on prompts:"
+    [ ! -d "frappe-bench/sites/$SITE_NAME" ] && docker exec -w /workspace/frappe-bench -it $CONTAINER bench new-site $SITE_NAME --db-type postgres --db-host postgresql --db-password $POSTGRES_PASSWORD --admin-password $ADMIN_PASSWORD
+
+    # Enable developer mode
+    echo "Apply default settings."
+    # docker exec $CONTAINER bench use frappe.mintsys.ch
+    docker exec -w /workspace/frappe-bench $CONTAINER bench --site $SITE_NAME set-config developer_mode 1
+    docker exec -w /workspace/frappe-bench $CONTAINER bench --site $SITE_NAME set-config max_file_size 1000000
+
+    docker restart $CONTAINER
+}
+
+
 function upgrade() {
-    echo "Upgrade frappe bench"
+    echo "Upgrade frappe bench."
     activate-venv
     pip install --upgrade frappe-bench 
 }
@@ -108,16 +133,6 @@ function new-app() {
     activate-venv
     cd frappe-bench
     bench new-app $1
-    bench --site $SITE_NAME install-app $1
-}
-
-function get-app() {
-    if test -z "$1"; then echo "\$1 is empty"; exit; fi
-    if test -z "$2"; then echo "\$1 is empty"; exit; fi
-    
-    activate-venv
-    cd frappe-bench
-    bench get-app schools $1 $2
     bench --site $SITE_NAME install-app $1
 }
 
@@ -189,6 +204,11 @@ function start() {
         docker-compose up -d frappe-nginx
     fi
 
+    if [[ "$1" =~ "dev" ]]; then
+        docker-compose -f docker-compose-dev.yml up -d
+        echo "Run `task start-dev` manually and open http://$SITE_NAME:8000/ in your browser."
+    fi
+
     if [[ "$1" =~ "all" ]]; then
         docker-compose up -d
         echo "Open http://$SITE_NAME:8080/ in your browser and login using 'Administrator:$ADMIN_PASSWORD'."
@@ -217,6 +237,9 @@ install)
 docker-install)
     docker-install $2
     ;;
+install-docker-dev)
+    install-docker-dev
+    ;;
 native-bench)
     native-bench "${@:2}"
     ;;
@@ -229,8 +252,14 @@ init)
 start)
     start $2
     ;;
+start-dev)
+    docker exec -w /workspace/frappe-bench frappe-bench bench start
+    ;;
 stop)
     stop
+    ;;
+stop-dev)
+    docker exec -w /workspace/frappe-bench frappe-bench killall -s 9 python
     ;;
 logs)
     docker logs frappe-python -f
@@ -255,6 +284,9 @@ restart)
     ;;
 kill)
     docker-compose down -v
+    ;;
+kill-dev)
+    docker-compose -f docker-compose-dev.yml down -v
     ;;
 clear-cache)
     clear-cache

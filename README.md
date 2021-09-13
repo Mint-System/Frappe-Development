@@ -3,7 +3,11 @@ Frappe Development
 
 The Mint System Frappe development environment.
 
-This projects provides a highly opinionated way to develop Frappe sites and apps.
+This projects provides a highly opinionated way to develop Frappe sites and apps. It provides three ways to run Frappe.
+
+* **Native**: Frappe is downloaded to the project folder. Use bench natively to run the development server.
+* **Docker Production**: This approach uses Docker Compose to the setup a Frappe project as it would be running in production.
+* **Docker Development**: The production setup is complex. Use this approach run Frappe Bench within a container.
 
 ## Requirements
 
@@ -77,4 +81,24 @@ Install app.
 
 ```bash
 task docker-install-app uppsala https://gitlab.com/hfmts/uppsala.git
+```
+
+### Docker Development
+
+Start Docker development containers.
+
+```bash
+task start dev
+```
+
+Install Frappe and setup site.
+
+```bash
+task docker-install-dev
+```
+
+Start the Docker development server.
+
+```bash
+task start-dev
 ```

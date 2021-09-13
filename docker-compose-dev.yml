@@ -1,0 +1,59 @@
+version: '3'
+# https://github.com/frappe/frappe_docker/blob/develop/devcontainer-example/docker-compose.yml
+services:
+
+  frappe-bench:
+    container_name: frappe-bench
+    image: frappe/bench:latest
+    command: sleep infinity
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+
+  redis-cache:
+    container_name: redis-cache
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-cache-vol:/data
+
+  redis-queue:
+    container_name: redis-queue
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - redis-queue-vol:/data
+
+  redis-socketio:
+    container_name: redis-socketio
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - "127.0.0.1:6381:6379"
+    volumes:
+      - redis-socketio-vol:/data    
+
+  postgresql:
+    container_name: postgresql
+    image: postgres:11.8
+    restart: on-failure
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgresql-vol:/var/lib/postgresql/data
+
+volumes:
+  postgresql-vol:
+  redis-cache-vol:
+  redis-queue-vol:
+  redis-socketio-vol:

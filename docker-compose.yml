@@ -134,7 +134,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     environment:
-      POSTGRES_USER: ${DB_ROOT_USER}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgresql-vol:/var/lib/postgresql/data
@@ -149,7 +149,7 @@ services:
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       SITE_NAME: ${SITE_NAME}
-      DB_ROOT_USER: ${DB_ROOT_USER}
+      DB_ROOT_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       INSTALL_APPS: ${INSTALL_APPS}
