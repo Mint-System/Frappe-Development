@@ -146,11 +146,6 @@ function install-app() {
     
     activate-venv
     cd frappe-bench
-    if test -z "$1"; then echo "\$1 is empty"; exit; fi
-    if test -z "$2"; then echo "\$1 is empty"; exit; fi
-    
-    activate-venv
-    cd frappe-bench
     bench get-app $1 $2
     bench --site $SITE_NAME install-app $1
 }
@@ -237,71 +232,71 @@ function restart() {
 }
 
 case "$1" in
-version)
-    version
-    ;;
-install)
-    install $2
-    ;;
-docker-install)
-    docker-install $2
-    ;;
-install-docker-dev)
-    install-docker-dev
-    ;;
-native-bench)
-    native-bench "${@:2}"
-    ;;
-docker-bench)
-    docker-bench "${@:2}"
-    ;;
-init)
-    init $2
-    ;;
-start)
-    start $2
-    ;;
-stop)
-    stop
-    ;;
-stop-bench)
-    docker exec -w /workspace/frappe-bench frappe-bench killall -s 9 python
-    ;;
-logs)
-    docker logs frappe-python -f
-    ;;
-upgrade)
-    upgrade
-    ;;
-new-app)
-    new-app $2
-    ;;
-install-app)
-    install-app $2 $3
-    ;;
-uninstall-app)
-    uninstall-app $2
-    ;;
-docker-install-app)
-    docker-install-app $2 $3
-    ;;
-restart)
-    restart
-    ;;
-kill)
-    docker-compose down -v
-    ;;
-kill-dev)
-    docker-compose -f docker-compose-dev.yml down -v
-    ;;
-clear-cache)
-    clear-cache
-    ;;
-source)
-    activate-venv
-    ;;
-*)
-    help task
-    exit 1
-    ;;
+    version)
+        version
+        ;;
+    install)
+        install $2
+        ;;
+    docker-install)
+        docker-install $2
+        ;;
+    install-docker-dev)
+        install-docker-dev
+        ;;
+    native-bench)
+        native-bench "${@:2}"
+        ;;
+    docker-bench)
+        docker-bench "${@:2}"
+        ;;
+    init)
+        init $2
+        ;;
+    start)
+        start $2
+        ;;
+    stop)
+        stop
+        ;;
+    stop-bench)
+        docker exec -w /workspace/frappe-bench frappe-bench killall -s 9 python
+        ;;
+    logs)
+        docker logs frappe-python -f
+        ;;
+    upgrade)
+        upgrade
+        ;;
+    new-app)
+        new-app $2
+        ;;
+    install-app)
+        install-app $2 $3
+        ;;
+    uninstall-app)
+        uninstall-app $2
+        ;;
+    docker-install-app)
+        docker-install-app $2 $3
+        ;;
+    restart)
+        restart
+        ;;
+    kill)
+        docker-compose down -v
+        ;;
+    kill-dev)
+        docker-compose -f docker-compose-dev.yml down -v
+        ;;
+    clear-cache)
+        clear-cache
+        ;;
+    source)
+        activate-venv
+        ;;
+    *)
+        help task
+        exit 1
+        ;;
 esac
